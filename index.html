@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SA Footballer — AI Dashboard Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#F8FAFC;--card:white;--border:#E2E8F0;--dark:#1E293B;--accent:#F59E0B;--green:#10B981;--blue:#3B82F6;--gray:#64748B;--lgray:#94A3B8;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
+.nav{background:var(--dark);padding:14px 30px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
+.nav .logo{font-size:18px;font-weight:800;color:white;}.nav .logo span{color:var(--accent);}
+.nav .right{display:flex;gap:8px;align-items:center;}
+.nav .status{color:var(--green);font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.nav .demo-tag{background:#F59E0B22;color:#F59E0B;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid #F59E0B44;}
+.tabs{background:white;border-bottom:1px solid var(--border);padding:0 30px;display:flex;gap:0;}
+.tab{padding:14px 20px;font-size:13px;font-weight:600;color:var(--lgray);cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab:hover{color:var(--dark);}
+.container{max-width:1200px;margin:0 auto;padding:20px 30px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:transform 0.2s;}
+.stat-card:hover{transform:translateY(-2px);}
+.stat-card .num{font-size:36px;font-weight:900;font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+.stat-card .lbl{font-size:12px;color:var(--gray);font-weight:500;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.card h3{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;}
+.report{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;}
+.report:hover{background:#FEF3C7;transform:translateX(4px);}
+.report .title{font-size:12px;font-weight:700;color:var(--dark);}
+.report .meta{font-size:10px;color:#92400E;font-family:'JetBrains Mono',monospace;margin-top:3px;}
+.email-item{background:#F0F9FF;border:1px solid #BAE6FD;border-radius:8px;padding:12px;margin-bottom:8px;transition:all 0.2s;}
+.email-item:hover{transform:translateX(4px);}
+.email-item .to{font-size:12px;font-weight:700;color:var(--dark);}
+.email-item .subj{font-size:10px;color:#0369A1;margin-top:2px;}
+.email-item .badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;background:#DCFCE7;color:#059669;margin-top:4px;}
+.cron{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px;margin-bottom:8px;}
+.cron .job{font-size:12px;font-weight:700;color:var(--dark);}
+.cron .time{font-size:10px;color:#059669;font-family:'JetBrains Mono',monospace;margin-top:3px;}
+.progress-bar{height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden;margin-top:8px;}
+.progress-bar .fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.generate-btn{background:var(--accent);color:white;border:none;padding:12px 24px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-top:12px;transition:background 0.2s;}
+.generate-btn:hover{background:#D97706;}
+.generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:white;border-radius:16px;padding:32px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.modal h2{font-size:20px;font-weight:800;margin-bottom:8px;}
+.modal .close{float:right;font-size:24px;cursor:pointer;color:var(--gray);}
+.modal p{font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:12px;}
+.live-counter{animation:countUp 2s ease-out forwards;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.section{display:none;}.section.active{display:block;}
+@media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr);}.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">SA <span>Footballer</span> Dashboard</div>
+  <div class="right"><div class="demo-tag">LIVE DEMO</div><div class="status">● All Systems Running</div></div>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview',this)">Overview</div>
+  <div class="tab" onclick="switchTab('reports',this)">Reports</div>
+  <div class="tab" onclick="switchTab('crm',this)">CRM</div>
+  <div class="tab" onclick="switchTab('automation',this)">Automation</div>
+</div>
+<div class="container">
+  <!-- OVERVIEW -->
+  <div class="section active" id="tab-overview">
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" style="color:#F59E0B;" id="report-count">0</div><div class="lbl">Reports This Week</div></div>
+      <div class="stat-card"><div class="num" style="color:#10B981;" id="email-count">0</div><div class="lbl">Emails Sent</div></div>
+      <div class="stat-card"><div class="num" style="color:#3B82F6;" id="open-rate">0</div><div class="lbl">Open Rate</div></div>
+      <div class="stat-card"><div class="num" style="color:#7C3AED;">0</div><div class="lbl">Human Intervention</div></div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Latest AI-Generated Reports</h3>
+        <div id="reports-list"></div>
+        <button class="generate-btn" id="gen-btn" onclick="generateReport()">⚡ Generate New Report</button>
+      </div>
+      <div class="card">
+        <h3>Email Automation Status</h3>
+        <div class="email-item"><div class="to">📧 Weekly Newsletter — Batch A</div><div class="subj">Round 18 Match Reports & Highlights</div><div class="badge">✓ Delivered · 423 recipients</div></div>
+        <div class="email-item"><div class="to">📧 Weekly Newsletter — Batch B</div><div class="subj">Round 18 Match Reports & Highlights</div><div class="badge">✓ Delivered · 318 recipients</div></div>
+        <div class="email-item"><div class="to">📧 Club Updates — All Clubs</div><div class="subj">Ladder Standings & Upcoming Fixtures</div><div class="badge">✓ Delivered · 48 clubs</div></div>
+        <div class="email-item"><div class="to">📧 Magazine — Premium</div><div class="subj">SA Footballer Weekly Issue 18</div><div class="badge">✓ Delivered · 795 premium</div></div>
+      </div>
+    </div>
+  </div>
+  <!-- REPORTS -->
+  <div class="section" id="tab-reports">
+    <div class="card" style="margin-bottom:16px;">
+      <h3>All Generated Reports — Round 18</h3>
+      <div id="full-reports-list"></div>
+    </div>
+  </div>
+  <!-- CRM -->
+  <div class="section" id="tab-crm">
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" style="color:#0369A1;">2,140</div><div class="lbl">Total Subscribers</div></div>
+      <div class="stat-card"><div class="num" style="color:#059669;">1,247</div><div class="lbl">Active This Week</div></div>
+      <div class="stat-card"><div class="num" style="color:#F59E0B;">892</div><div class="lbl">Magazines Delivered</div></div>
+      <div class="stat-card"><div class="num" style="color:#7C3AED;">68.3%</div><div class="lbl">Avg Open Rate</div></div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Subscriber Segments</h3>
+        <div class="email-item"><div class="to">General Audience</div><div class="subj">Football fans and regular readers</div><div class="badge">1,247 active</div></div>
+        <div class="email-item"><div class="to">Club Officials</div><div class="subj">Team managers, coaches, committee</div><div class="badge">48 active</div></div>
+        <div class="email-item"><div class="to">Sponsors</div><div class="subj">Advertising and sponsorship partners</div><div class="badge">32 active</div></div>
+        <div class="email-item"><div class="to">Premium Members</div><div class="subj">Paid subscription members</div><div class="badge">795 active</div></div>
+      </div>
+      <div class="card">
+        <h3>Recent Campaigns</h3>
+        <div class="email-item"><div class="to">📰 Magazine — Issue 18</div><div class="subj">24 pages · AI Generated</div><div class="badge">✓ 892 delivered</div></div>
+        <div class="email-item"><div class="to">📧 Round 18 Wrap</div><div class="subj">Match highlights + ladder update</div><div class="badge">✓ 68.3% open rate</div></div>
+        <div class="email-item"><div class="to">📧 Sponsor Report</div><div class="subj">Monthly performance metrics</div><div class="badge">✓ 32 delivered</div></div>
+      </div>
+    </div>
+  </div>
+  <!-- AUTOMATION -->
+  <div class="section" id="tab-automation">
+    <div class="grid">
+      <div class="card">
+        <h3>Scheduled Automations</h3>
+        <div class="cron"><div class="job">⏰ AI Report Generation</div><div class="time">Every Saturday 18:00 ACST</div><div class="progress-bar"><div class="fill" style="width:100%;background:#10B981;"></div></div></div>
+        <div class="cron"><div class="job">⏰ CMS Auto-Publishing</div><div class="time">Every Saturday 20:00 ACST</div><div class="progress-bar"><div class="fill" style="width:100%;background:#10B981;"></div></div></div>
+        <div class="cron"><div class="job">⏰ Email Distribution</div><div class="time">Every Monday 08:00 ACST</div><div class="progress-bar"><div class="fill" style="width:85%;background:#3B82F6;"></div></div></div>
+        <div class="cron"><div class="job">⏰ Magazine Delivery</div><div class="time">Every Monday 10:00 ACST</div><div class="progress-bar"><div class="fill" style="width:75%;background:#F59E0B;"></div></div></div>
+      </div>
+      <div class="card">
+        <h3>System Health</h3>
+        <div class="cron"><div class="job">✅ OpenAI API</div><div class="time">Connected · Avg response: 2.1s</div></div>
+        <div class="cron"><div class="job">✅ Sanity CMS</div><div class="time">Connected · 312 documents published</div></div>
+        <div class="cron"><div class="job">✅ Email Provider</div><div class="time">Connected · 1,247 delivered today</div></div>
+        <div class="cron"><div class="job">✅ Cron Scheduler</div><div class="time">Active · Next run: Sat 18:00</div></div>
+        <div style="margin-top:16px;padding:14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:#059669;">Uptime: 99.8% · Failed Publishes: 0 · Human Intervention: 0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2 id="modal-title"></h2>
+    <p id="modal-body"></p>
+  </div>
+</div>
+<script>
+const teams = [
+  ["Glenelg","Port Adelaide"],["Norwood","West Adelaide"],["Sturt","Central District"],
+  ["South Adelaide","North Adelaide"],["Woodville-West Torrens","Eagles"],
+  ["Adelaide","Salisbury North"],["Happy Valley","Morphettville Park"],
+  ["Brighton","Marion"],["Christies Beach","Reynella"],["Flagstaff Hill","Hallett Cove"]
+];
+let reportCount = 312;
+
+function switchTab(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+function animateCount(id, target, suffix='') {
+  const el = document.getElementById(id);
+  let current = 0;
+  const step = target / 40;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = Math.round(current) + suffix;
+  }, 30);
+}
+
+function loadReports() {
+  const list = document.getElementById('reports-list');
+  const fullList = document.getElementById('full-reports-list');
+  teams.slice(0, 5).forEach(([a, b], i) => {
+    const mins = (i + 1) * 12;
+    const words = 750 + Math.floor(Math.random() * 300);
+    const html = `<div class="report" onclick="showReport('${a}','${b}')">
+      <div class="title">🏈 Round 18 — ${a} vs ${b}</div>
+      <div class="meta">Published ${mins}m ago · AI Generated · ${words} words</div>
+    </div>`;
+    list.innerHTML += html;
+  });
+  teams.forEach(([a, b], i) => {
+    const mins = (i + 1) * 8;
+    const words = 750 + Math.floor(Math.random() * 300);
+    fullList.innerHTML += `<div class="report" onclick="showReport('${a}','${b}')">
+      <div class="title">🏈 Round 18 — ${a} vs ${b}</div>
+      <div class="meta">Published ${mins}m ago · AI Generated · ${words} words</div>
+    </div>`;
+  });
+}
+
+function showReport(a, b) {
+  const scoreA = Math.floor(Math.random() * 80) + 60;
+  const scoreB = Math.floor(Math.random() * 80) + 60;
+  const winner = scoreA > scoreB ? a : b;
+  document.getElementById('modal-title').textContent = `${a} vs ${b} — Round 18`;
+  document.getElementById('modal-body').innerHTML = `
+    <strong>Final Score: ${a} ${scoreA} def. ${b} ${scoreB}</strong><br><br>
+    ${winner} secured a commanding victory in Round 18, outperforming their opponents with strong performances across all four quarters. The ${winner} midfield dominated possession in the first half, setting the tone for what would become a comprehensive display of team football.<br><br>
+    Key performers for ${winner} included several standout players who contributed to a well-rounded team effort. The forward line was particularly effective, converting opportunities with precision throughout the match.<br><br>
+    <em style="color:var(--lgray);font-size:11px;">This report was automatically generated by AI and published without human intervention.</em>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+async function generateReport() {
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ AI Generating Report...';
+  await new Promise(r => setTimeout(r, 2000));
+  btn.textContent = '📝 Writing content...';
+  await new Promise(r => setTimeout(r, 1500));
+  btn.textContent = '✅ Publishing to CMS...';
+  await new Promise(r => setTimeout(r, 1000));
+  reportCount++;
+  document.getElementById('report-count').textContent = reportCount;
+  const list = document.getElementById('reports-list');
+  const words = 800 + Math.floor(Math.random() * 200);
+  const html = `<div class="report" onclick="showReport('Demo Team A','Demo Team B')" style="border-color:#10B981;background:#F0FDF4;">
+    <div class="title">🏈 NEW — Demo Team A vs Demo Team B</div>
+    <div class="meta">Published just now · AI Generated · ${words} words</div>
+  </div>`;
+  list.insertAdjacentHTML('afterbegin', html);
+  btn.textContent = '⚡ Generate New Report';
+  btn.disabled = false;
+}
+
+loadReports();
+setTimeout(() => {
+  animateCount('report-count', 312);
+  animateCount('email-count', 1247);
+  animateCount('open-rate', 68, '%');
+}, 300);
+</script>
+</body>
+</html>
