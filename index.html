@@ -3,149 +3,271 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SA Footballer — AI Dashboard Demo</title>
+<title>SAFie — AI by SA Footballer</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--bg:#F8FAFC;--card:white;--border:#E2E8F0;--dark:#1E293B;--accent:#F59E0B;--green:#10B981;--blue:#3B82F6;--gray:#64748B;--lgray:#94A3B8;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
-.nav{background:var(--dark);padding:14px 30px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
-.nav .logo{font-size:18px;font-weight:800;color:white;}.nav .logo span{color:var(--accent);}
-.nav .right{display:flex;gap:8px;align-items:center;}
-.nav .status{color:var(--green);font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;}
-.nav .demo-tag{background:#F59E0B22;color:#F59E0B;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid #F59E0B44;}
-.tabs{background:white;border-bottom:1px solid var(--border);padding:0 30px;display:flex;gap:0;}
-.tab{padding:14px 20px;font-size:13px;font-weight:600;color:var(--lgray);cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-.tab:hover{color:var(--dark);}
-.container{max-width:1200px;margin:0 auto;padding:20px 30px;}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:transform 0.2s;}
-.stat-card:hover{transform:translateY(-2px);}
-.stat-card .num{font-size:36px;font-weight:900;font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
-.stat-card .lbl{font-size:12px;color:var(--gray);font-weight:500;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
-.card h3{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;}
-.report{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;}
-.report:hover{background:#FEF3C7;transform:translateX(4px);}
-.report .title{font-size:12px;font-weight:700;color:var(--dark);}
-.report .meta{font-size:10px;color:#92400E;font-family:'JetBrains Mono',monospace;margin-top:3px;}
-.email-item{background:#F0F9FF;border:1px solid #BAE6FD;border-radius:8px;padding:12px;margin-bottom:8px;transition:all 0.2s;}
-.email-item:hover{transform:translateX(4px);}
-.email-item .to{font-size:12px;font-weight:700;color:var(--dark);}
-.email-item .subj{font-size:10px;color:#0369A1;margin-top:2px;}
-.email-item .badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;background:#DCFCE7;color:#059669;margin-top:4px;}
-.cron{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px;margin-bottom:8px;}
-.cron .job{font-size:12px;font-weight:700;color:var(--dark);}
-.cron .time{font-size:10px;color:#059669;font-family:'JetBrains Mono',monospace;margin-top:3px;}
-.progress-bar{height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden;margin-top:8px;}
-.progress-bar .fill{height:100%;border-radius:4px;transition:width 1s ease;}
-.generate-btn{background:var(--accent);color:white;border:none;padding:12px 24px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-top:12px;transition:background 0.2s;}
-.generate-btn:hover{background:#D97706;}
-.generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
-.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;}
+:root{
+  --ink:#1A1D29;
+  --dim:#6B7080;
+  --faint:#9FA3B0;
+  --white:#FFFFFF;
+  --border:#ECEBF3;
+  --green:#1E8449;
+  --green-bg:#E9F7EF;
+  --cyan:#0EA5C4;
+  --yellow:#F5B400;
+  --purple:#8B5CF6;
+  --pink:#EC4899;
+  --blue:#3B82F6;
+  --orange:#F97316;
+  --teal:#14B8A6;
+  --red:#EF4444;
+  --sans:'Inter',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+body{
+  font-family:var(--sans);color:var(--ink);min-height:100vh;padding:22px;
+  background:linear-gradient(120deg,#FDF6E3 0%,#EAF3FB 30%,#F3ECFB 55%,#FBEFE3 78%,#EAF6EF 100%);
+}
+.shell{max-width:1400px;margin:0 auto;background:#FDFDFC;border-radius:26px;box-shadow:0 20px 60px rgba(30,40,60,.08);display:flex;overflow:hidden;min-height:calc(100vh - 44px);}
+
+/* SIDEBAR */
+.sidebar{width:230px;background:#fff;border-right:1px solid var(--border);padding:22px 16px;display:flex;flex-direction:column;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:9px;padding:2px 6px 4px;}
+.brand .mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--green),#58C27D);}
+.brand .name{font-weight:900;font-size:18px;letter-spacing:-0.02em;}
+.pill-badge{display:inline-block;background:var(--yellow);color:#3A2900;font-size:9px;font-weight:800;padding:3px 9px;border-radius:10px;margin:6px 0 18px 6px;letter-spacing:0.02em;}
+.navitem{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;color:var(--dim);font-size:13.5px;font-weight:600;margin-bottom:4px;cursor:pointer;}
+.navitem svg{width:16px;height:16px;}
+.navitem.active{background:var(--green);color:#fff;}
+.sidebar .spacer{flex:1;}
+.signedin{background:#F7F8F9;border:1px solid var(--border);border-radius:12px;padding:12px;font-size:11.5px;margin-bottom:10px;}
+.signedin .l{color:var(--faint);}
+.signedin .v{font-weight:700;margin-top:2px;}
+.logout-btn{width:100%;background:var(--ink);color:#fff;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:12.5px;cursor:pointer;}
+
+/* MAIN */
+.main{flex:1;min-width:0;}
+.topbar{display:flex;align-items:center;gap:16px;padding:22px 28px 0;}
+.topbar h1{font-size:19px;font-weight:800;}
+.searchbar{flex:1;background:#F7F8F9;border:1px solid var(--border);border-radius:14px;padding:11px 16px;font-size:12.5px;color:var(--faint);max-width:420px;margin-left:auto;}
+.top-right{display:flex;align-items:center;gap:12px;}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:#F7F8F9;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--dim);position:relative;}
+.icon-btn .dot{position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--pink);}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--cyan));}
+
+.container{padding:18px 28px 40px;}
+.greeting{font-size:13px;color:var(--dim);margin-bottom:16px;}
+.greeting b{color:var(--ink);}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;}
+.stat-card{border-radius:18px;padding:18px;border:1px solid var(--border);position:relative;overflow:hidden;}
+.stat-card .top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.stat-card .ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;background:#fff;}
+.stat-card .lbl{font-size:13px;color:var(--ink);font-weight:600;}
+.stat-card .num{font-size:28px;font-weight:800;font-family:var(--mono);}
+.stat-card .sub{display:inline-block;font-size:10.5px;color:var(--dim);background:#fff;border:1px solid var(--border);padding:3px 9px;border-radius:8px;margin-left:8px;}
+.sc-1{background:linear-gradient(135deg,#FDF3E7,#F3F8FD);}
+.sc-2{background:linear-gradient(135deg,#EAFBF3,#F3F8FD);}
+.sc-3{background:linear-gradient(135deg,#EEF3FE,#FBF3FD);}
+.sc-4{background:linear-gradient(135deg,#F6EEFE,#FDF3F3);}
+.sc-5{background:linear-gradient(135deg,#FEF3E9,#FEFBF0);}
+.sc-6{background:linear-gradient(135deg,#FDEEF6,#F0F8FD);}
+.sc-7{background:linear-gradient(135deg,#E9FBF6,#F6FDF0);}
+.sc-8{background:linear-gradient(135deg,#FEEEEE,#FDF6EC);}
+
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:20px;}
+.card h3{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.card h3 .more{margin-left:auto;font-size:11.5px;color:var(--faint);font-weight:600;cursor:pointer;}
+
+.report{background:#F9FAF9;border:1px solid var(--border);border-radius:12px;padding:12px 13px;margin-bottom:9px;cursor:pointer;transition:all .2s;}
+.report:hover{border-color:var(--green);}
+.report .title{font-size:12.5px;font-weight:700;}
+.report .meta{font-size:10.5px;color:var(--faint);font-family:var(--mono);margin-top:3px;}
+
+.task-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+.task-row:last-child{border:none;}
+.task-row .box{width:16px;height:16px;border-radius:5px;border:1.6px solid var(--border);flex-shrink:0;}
+.task-row .box.done{background:var(--green);border-color:var(--green);}
+.task-row .name{flex:1;}
+.flag{width:12px;height:12px;color:var(--pink);flex-shrink:0;}
+
+.appt-row{padding:11px 0;border-bottom:1px solid var(--border);}
+.appt-row:last-child{border:none;}
+.appt-row .title{font-size:12.5px;font-weight:700;}
+.appt-row .time{font-size:10.5px;color:var(--faint);font-family:var(--mono);margin-top:3px;}
+
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+.chartwrap{height:170px;position:relative;}
+.review-row{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);}
+.review-row:last-child{border:none;}
+.review-row .badge{width:36px;height:36px;border-radius:10px;background:var(--green-bg);color:var(--green);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.review-row .name{font-size:12.5px;font-weight:700;}
+.review-row .time{font-size:10.5px;color:var(--faint);margin-left:6px;font-weight:400;}
+.review-row .desc{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.45;}
+
+.generate-btn{background:var(--green);color:#fff;border:none;padding:12px 22px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-top:10px;}
+.generate-btn:disabled{opacity:.55;}
+
+.progress-bar{height:7px;background:#F0F1F3;border-radius:4px;overflow:hidden;margin-top:8px;}
+.progress-bar .fill{height:100%;border-radius:4px;}
+
+.section{display:none;}
+.section.active{display:block;}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,25,35,.45);z-index:100;align-items:center;justify-content:center;}
 .modal-overlay.show{display:flex;}
-.modal{background:white;border-radius:16px;padding:32px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
-.modal h2{font-size:20px;font-weight:800;margin-bottom:8px;}
-.modal .close{float:right;font-size:24px;cursor:pointer;color:var(--gray);}
-.modal p{font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:12px;}
-.live-counter{animation:countUp 2s ease-out forwards;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
-.section{display:none;}.section.active{display:block;}
-@media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr);}.grid{grid-template-columns:1fr;}}
+.modal{background:#fff;border-radius:18px;padding:30px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;}
+.modal h2{font-size:18px;font-weight:800;margin-bottom:10px;}
+.modal .close{float:right;font-size:22px;cursor:pointer;color:var(--dim);}
+.modal p{font-size:13px;color:var(--dim);line-height:1.7;}
+
+@media(max-width:980px){.shell{flex-direction:column;}.sidebar{width:auto;flex-direction:row;flex-wrap:wrap;}.stats-row{grid-template-columns:1fr 1fr;}.grid3,.grid2{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-<div class="nav">
-  <div class="logo">SA <span>Footballer</span> Dashboard</div>
-  <div class="right"><div class="demo-tag">LIVE DEMO</div><div class="status">● All Systems Running</div></div>
-</div>
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('overview',this)">Overview</div>
-  <div class="tab" onclick="switchTab('reports',this)">Reports</div>
-  <div class="tab" onclick="switchTab('crm',this)">CRM</div>
-  <div class="tab" onclick="switchTab('automation',this)">Automation</div>
-</div>
-<div class="container">
-  <!-- OVERVIEW -->
-  <div class="section active" id="tab-overview">
-    <div class="stats-row">
-      <div class="stat-card"><div class="num" style="color:#F59E0B;" id="report-count">0</div><div class="lbl">Reports This Week</div></div>
-      <div class="stat-card"><div class="num" style="color:#10B981;" id="email-count">0</div><div class="lbl">Emails Sent</div></div>
-      <div class="stat-card"><div class="num" style="color:#3B82F6;" id="open-rate">0</div><div class="lbl">Open Rate</div></div>
-      <div class="stat-card"><div class="num" style="color:#7C3AED;">0</div><div class="lbl">Human Intervention</div></div>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <h3>Latest AI-Generated Reports</h3>
-        <div id="reports-list"></div>
-        <button class="generate-btn" id="gen-btn" onclick="generateReport()">⚡ Generate New Report</button>
-      </div>
-      <div class="card">
-        <h3>Email Automation Status</h3>
-        <div class="email-item"><div class="to">📧 Weekly Newsletter — Batch A</div><div class="subj">Round 18 Match Reports & Highlights</div><div class="badge">✓ Delivered · 423 recipients</div></div>
-        <div class="email-item"><div class="to">📧 Weekly Newsletter — Batch B</div><div class="subj">Round 18 Match Reports & Highlights</div><div class="badge">✓ Delivered · 318 recipients</div></div>
-        <div class="email-item"><div class="to">📧 Club Updates — All Clubs</div><div class="subj">Ladder Standings & Upcoming Fixtures</div><div class="badge">✓ Delivered · 48 clubs</div></div>
-        <div class="email-item"><div class="to">📧 Magazine — Premium</div><div class="subj">SA Footballer Weekly Issue 18</div><div class="badge">✓ Delivered · 795 premium</div></div>
-      </div>
-    </div>
+<div class="shell">
+
+  <div class="sidebar">
+    <div class="brand"><div class="mark"></div><div class="name">SAFie</div></div>
+    <div class="pill-badge">AI BY SA FOOTBALLER</div>
+    <div class="navitem active" onclick="switchTab('overview',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+    <div class="navitem" onclick="switchTab('reports',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h6M9 16h6"/></svg>Reports</div>
+    <div class="navitem" onclick="switchTab('crm',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M2 20c0-3 3-5 7-5s7 2 7 5"/><circle cx="17" cy="8" r="2.4"/></svg>CRM</div>
+    <div class="navitem" onclick="switchTab('automation',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>Automation</div>
+    <div class="spacer"></div>
+    <div class="signedin"><div class="l">Signed in as</div><div class="v">admin</div></div>
+    <button class="logout-btn">Logout</button>
   </div>
-  <!-- REPORTS -->
-  <div class="section" id="tab-reports">
-    <div class="card" style="margin-bottom:16px;">
-      <h3>All Generated Reports — Round 18</h3>
-      <div id="full-reports-list"></div>
-    </div>
-  </div>
-  <!-- CRM -->
-  <div class="section" id="tab-crm">
-    <div class="stats-row">
-      <div class="stat-card"><div class="num" style="color:#0369A1;">2,140</div><div class="lbl">Total Subscribers</div></div>
-      <div class="stat-card"><div class="num" style="color:#059669;">1,247</div><div class="lbl">Active This Week</div></div>
-      <div class="stat-card"><div class="num" style="color:#F59E0B;">892</div><div class="lbl">Magazines Delivered</div></div>
-      <div class="stat-card"><div class="num" style="color:#7C3AED;">68.3%</div><div class="lbl">Avg Open Rate</div></div>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <h3>Subscriber Segments</h3>
-        <div class="email-item"><div class="to">General Audience</div><div class="subj">Football fans and regular readers</div><div class="badge">1,247 active</div></div>
-        <div class="email-item"><div class="to">Club Officials</div><div class="subj">Team managers, coaches, committee</div><div class="badge">48 active</div></div>
-        <div class="email-item"><div class="to">Sponsors</div><div class="subj">Advertising and sponsorship partners</div><div class="badge">32 active</div></div>
-        <div class="email-item"><div class="to">Premium Members</div><div class="subj">Paid subscription members</div><div class="badge">795 active</div></div>
-      </div>
-      <div class="card">
-        <h3>Recent Campaigns</h3>
-        <div class="email-item"><div class="to">📰 Magazine — Issue 18</div><div class="subj">24 pages · AI Generated</div><div class="badge">✓ 892 delivered</div></div>
-        <div class="email-item"><div class="to">📧 Round 18 Wrap</div><div class="subj">Match highlights + ladder update</div><div class="badge">✓ 68.3% open rate</div></div>
-        <div class="email-item"><div class="to">📧 Sponsor Report</div><div class="subj">Monthly performance metrics</div><div class="badge">✓ 32 delivered</div></div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>Dashboard</h1>
+      <div class="searchbar">Search reports, matches, subscribers…</div>
+      <div class="top-right">
+        <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 .5c0 1.5-2.5 1.8-2.5 3.5M12 17h.01"/></svg></div>
+        <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg><div class="dot"></div></div>
+        <div class="avatar"></div>
       </div>
     </div>
-  </div>
-  <!-- AUTOMATION -->
-  <div class="section" id="tab-automation">
-    <div class="grid">
-      <div class="card">
-        <h3>Scheduled Automations</h3>
-        <div class="cron"><div class="job">⏰ AI Report Generation</div><div class="time">Every Saturday 18:00 ACST</div><div class="progress-bar"><div class="fill" style="width:100%;background:#10B981;"></div></div></div>
-        <div class="cron"><div class="job">⏰ CMS Auto-Publishing</div><div class="time">Every Saturday 20:00 ACST</div><div class="progress-bar"><div class="fill" style="width:100%;background:#10B981;"></div></div></div>
-        <div class="cron"><div class="job">⏰ Email Distribution</div><div class="time">Every Monday 08:00 ACST</div><div class="progress-bar"><div class="fill" style="width:85%;background:#3B82F6;"></div></div></div>
-        <div class="cron"><div class="job">⏰ Magazine Delivery</div><div class="time">Every Monday 10:00 ACST</div><div class="progress-bar"><div class="fill" style="width:75%;background:#F59E0B;"></div></div></div>
-      </div>
-      <div class="card">
-        <h3>System Health</h3>
-        <div class="cron"><div class="job">✅ OpenAI API</div><div class="time">Connected · Avg response: 2.1s</div></div>
-        <div class="cron"><div class="job">✅ Sanity CMS</div><div class="time">Connected · 312 documents published</div></div>
-        <div class="cron"><div class="job">✅ Email Provider</div><div class="time">Connected · 1,247 delivered today</div></div>
-        <div class="cron"><div class="job">✅ Cron Scheduler</div><div class="time">Active · Next run: Sat 18:00</div></div>
-        <div style="margin-top:16px;padding:14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;text-align:center;">
-          <div style="font-size:13px;font-weight:800;color:#059669;">Uptime: 99.8% · Failed Publishes: 0 · Human Intervention: 0</div>
+
+    <div class="container">
+      <div class="greeting">Welcome back, <b>admin</b> — here's what SAFie automated this week.</div>
+
+      <!-- OVERVIEW -->
+      <div class="section active" id="tab-overview">
+        <div class="stats-row">
+          <div class="stat-card sc-1"><div class="top"><div class="ic">📝</div><div class="lbl">Reports This Week</div></div><div class="num" id="report-count">0</div></div>
+          <div class="stat-card sc-2"><div class="top"><div class="ic">📧</div><div class="lbl">Emails Sent</div></div><div class="num" id="email-count">0</div></div>
+          <div class="stat-card sc-3"><div class="top"><div class="ic">📈</div><div class="lbl">Open Rate</div></div><div class="num" id="open-rate">0</div></div>
+          <div class="stat-card sc-4"><div class="top"><div class="ic">🧑‍⚖️</div><div class="lbl">Human Intervention</div></div><div class="num">0</div></div>
+          <div class="stat-card sc-5"><div class="top"><div class="ic">👥</div><div class="lbl">Subscribers</div></div><div class="num">2,140</div></div>
+          <div class="stat-card sc-6"><div class="top"><div class="ic">📰</div><div class="lbl">Magazines Delivered</div></div><div class="num">892</div></div>
+          <div class="stat-card sc-7"><div class="top"><div class="ic">⏱️</div><div class="lbl">Uptime</div></div><div class="num">99.8%</div></div>
+          <div class="stat-card sc-8"><div class="top"><div class="ic">⚠️</div><div class="lbl">Failed Publishes</div></div><div class="num">0</div></div>
+        </div>
+
+        <div class="grid3">
+          <div class="card">
+            <h3>📄 Latest AI Reports<span class="more" onclick="switchTab('reports',document.querySelectorAll('.navitem')[1])">See all</span></h3>
+            <div id="reports-list"></div>
+            <button class="generate-btn" id="gen-btn" onclick="generateReport()">⚡ Generate New Report</button>
+          </div>
+          <div class="card">
+            <h3>✓ Automation Tasks</h3>
+            <div class="task-row"><div class="box done"></div><div class="name">AI Report Generation</div><svg class="flag" viewBox="0 0 24 24" fill="currentColor"><path d="M5 21V4l14 6-14 6"/></svg></div>
+            <div class="task-row"><div class="box done"></div><div class="name">CMS Auto-Publishing</div></div>
+            <div class="task-row"><div class="box"></div><div class="name">Email Distribution</div><svg class="flag" viewBox="0 0 24 24" fill="currentColor"><path d="M5 21V4l14 6-14 6"/></svg></div>
+            <div class="task-row"><div class="box"></div><div class="name">Magazine Delivery</div></div>
+            <div class="task-row"><div class="box done"></div><div class="name">Ladder Standings Sync</div></div>
+          </div>
+          <div class="card">
+            <h3>🗓 Scheduled Runs</h3>
+            <div class="appt-row"><div class="title">AI Report Generation</div><div class="time">Sat 18:00 ACST</div></div>
+            <div class="appt-row"><div class="title">CMS Auto-Publishing</div><div class="time">Sat 20:00 ACST</div></div>
+            <div class="appt-row"><div class="title">Email Distribution</div><div class="time">Mon 08:00 ACST</div></div>
+            <div class="appt-row"><div class="title">Magazine Delivery</div><div class="time">Mon 10:00 ACST</div></div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <h3>📊 Reports Published<span class="more">Last 6 rounds ▾</span></h3>
+            <div class="chartwrap">
+              <svg viewBox="0 0 400 160" width="100%" height="100%" preserveAspectRatio="none">
+                <defs>
+                  <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="0" x2="0" y2="6" stroke="#1E8449" stroke-width="2" opacity="0.35"/>
+                  </pattern>
+                </defs>
+                <polyline points="0,110 60,95 120,120 180,80 240,60 300,70 360,35 400,45" fill="none" stroke="#1E8449" stroke-width="2.5"/>
+                <polygon points="0,110 60,95 120,120 180,80 240,60 300,70 360,35 400,45 400,160 0,160" fill="url(#hatch)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card">
+            <h3>🩺 System Health<span class="more">See all</span></h3>
+            <div class="review-row"><div class="badge">✓</div><div><div class="name">OpenAI API<span class="time">2.1s avg</span></div><div class="desc">Connected — generating reports normally</div></div></div>
+            <div class="review-row"><div class="badge">✓</div><div><div class="name">Sanity CMS<span class="time">312 docs</span></div><div class="desc">Connected — auto-publishing on schedule</div></div></div>
+            <div class="review-row"><div class="badge">✓</div><div><div class="name">Email Provider<span class="time">today</span></div><div class="desc">1,247 delivered, 0 bounced</div></div></div>
+            <div class="review-row"><div class="badge">✓</div><div><div class="name">Cron Scheduler<span class="time">active</span></div><div class="desc">Next run Sat 18:00 ACST</div></div></div>
+          </div>
         </div>
       </div>
+
+      <!-- REPORTS -->
+      <div class="section" id="tab-reports">
+        <div class="card"><h3>📄 All Generated Reports — Round 18</h3><div id="full-reports-list"></div></div>
+      </div>
+
+      <!-- CRM -->
+      <div class="section" id="tab-crm">
+        <div class="stats-row">
+          <div class="stat-card sc-1"><div class="top"><div class="ic">👥</div><div class="lbl">Total Subscribers</div></div><div class="num">2,140</div></div>
+          <div class="stat-card sc-2"><div class="top"><div class="ic">🟢</div><div class="lbl">Active This Week</div></div><div class="num">1,247</div></div>
+          <div class="stat-card sc-5"><div class="top"><div class="ic">📰</div><div class="lbl">Magazines Delivered</div></div><div class="num">892</div></div>
+          <div class="stat-card sc-4"><div class="top"><div class="ic">📈</div><div class="lbl">Avg Open Rate</div></div><div class="num">68.3%</div></div>
+        </div>
+        <div class="grid3" style="grid-template-columns:1fr 1fr;">
+          <div class="card"><h3>🎯 Subscriber Segments</h3>
+            <div class="appt-row"><div class="title">General Audience</div><div class="time">1,247 active</div></div>
+            <div class="appt-row"><div class="title">Club Officials</div><div class="time">48 active</div></div>
+            <div class="appt-row"><div class="title">Sponsors</div><div class="time">32 active</div></div>
+            <div class="appt-row"><div class="title">Premium Members</div><div class="time">795 active</div></div>
+          </div>
+          <div class="card"><h3>📣 Recent Campaigns</h3>
+            <div class="appt-row"><div class="title">Magazine — Issue 18</div><div class="time">892 delivered</div></div>
+            <div class="appt-row"><div class="title">Round 18 Wrap</div><div class="time">68.3% open rate</div></div>
+            <div class="appt-row"><div class="title">Sponsor Report</div><div class="time">32 delivered</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUTOMATION -->
+      <div class="section" id="tab-automation">
+        <div class="grid3" style="grid-template-columns:1fr 1fr;">
+          <div class="card"><h3>⏰ Scheduled Automations</h3>
+            <div class="appt-row"><div class="title">AI Report Generation</div><div class="time">Sat 18:00 ACST</div><div class="progress-bar"><div class="fill" style="width:100%;background:var(--green);"></div></div></div>
+            <div class="appt-row"><div class="title">CMS Auto-Publishing</div><div class="time">Sat 20:00 ACST</div><div class="progress-bar"><div class="fill" style="width:100%;background:var(--green);"></div></div></div>
+            <div class="appt-row"><div class="title">Email Distribution</div><div class="time">Mon 08:00 ACST</div><div class="progress-bar"><div class="fill" style="width:85%;background:var(--cyan);"></div></div></div>
+            <div class="appt-row"><div class="title">Magazine Delivery</div><div class="time">Mon 10:00 ACST</div><div class="progress-bar"><div class="fill" style="width:75%;background:var(--yellow);"></div></div></div>
+          </div>
+          <div class="card"><h3>🩺 System Health</h3>
+            <div class="appt-row"><div class="title">✅ OpenAI API</div><div class="time">Connected · avg 2.1s</div></div>
+            <div class="appt-row"><div class="title">✅ Sanity CMS</div><div class="time">312 documents published</div></div>
+            <div class="appt-row"><div class="title">✅ Email Provider</div><div class="time">1,247 delivered today</div></div>
+            <div class="appt-row"><div class="title">✅ Cron Scheduler</div><div class="time">Next run Sat 18:00</div></div>
+            <div style="margin-top:10px;padding:12px;background:var(--green-bg);border:1px solid #BEE9CE;border-radius:11px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">Uptime 99.8% · Failed publishes 0 · Human intervention 0</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
-<!-- Modal -->
+
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <span class="close" onclick="closeModal()">&times;</span>
@@ -153,6 +275,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-h
     <p id="modal-body"></p>
   </div>
 </div>
+
 <script>
 const teams = [
   ["Glenelg","Port Adelaide"],["Norwood","West Adelaide"],["Sturt","Central District"],
@@ -164,7 +287,7 @@ let reportCount = 312;
 
 function switchTab(name, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.navitem').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   el.classList.add('active');
 }
@@ -186,11 +309,10 @@ function loadReports() {
   teams.slice(0, 5).forEach(([a, b], i) => {
     const mins = (i + 1) * 12;
     const words = 750 + Math.floor(Math.random() * 300);
-    const html = `<div class="report" onclick="showReport('${a}','${b}')">
+    list.innerHTML += `<div class="report" onclick="showReport('${a}','${b}')">
       <div class="title">🏈 Round 18 — ${a} vs ${b}</div>
       <div class="meta">Published ${mins}m ago · AI Generated · ${words} words</div>
     </div>`;
-    list.innerHTML += html;
   });
   teams.forEach(([a, b], i) => {
     const mins = (i + 1) * 8;
@@ -209,9 +331,9 @@ function showReport(a, b) {
   document.getElementById('modal-title').textContent = `${a} vs ${b} — Round 18`;
   document.getElementById('modal-body').innerHTML = `
     <strong>Final Score: ${a} ${scoreA} def. ${b} ${scoreB}</strong><br><br>
-    ${winner} secured a commanding victory in Round 18, outperforming their opponents with strong performances across all four quarters. The ${winner} midfield dominated possession in the first half, setting the tone for what would become a comprehensive display of team football.<br><br>
+    ${winner} secured a commanding victory in Round 18, outperforming their opponents with strong performances across all four quarters. The ${winner} midfield dominated possession in the first half, setting the tone for a comprehensive display of team football.<br><br>
     Key performers for ${winner} included several standout players who contributed to a well-rounded team effort. The forward line was particularly effective, converting opportunities with precision throughout the match.<br><br>
-    <em style="color:var(--lgray);font-size:11px;">This report was automatically generated by AI and published without human intervention.</em>
+    <em style="color:var(--faint);font-size:11px;">This report was automatically generated by AI and published without human intervention.</em>
   `;
   document.getElementById('modal').classList.add('show');
 }
@@ -231,11 +353,10 @@ async function generateReport() {
   document.getElementById('report-count').textContent = reportCount;
   const list = document.getElementById('reports-list');
   const words = 800 + Math.floor(Math.random() * 200);
-  const html = `<div class="report" onclick="showReport('Demo Team A','Demo Team B')" style="border-color:#10B981;background:#F0FDF4;">
+  list.insertAdjacentHTML('afterbegin', `<div class="report" onclick="showReport('Demo Team A','Demo Team B')" style="border-color:var(--green);">
     <div class="title">🏈 NEW — Demo Team A vs Demo Team B</div>
     <div class="meta">Published just now · AI Generated · ${words} words</div>
-  </div>`;
-  list.insertAdjacentHTML('afterbegin', html);
+  </div>`);
   btn.textContent = '⚡ Generate New Report';
   btn.disabled = false;
 }
